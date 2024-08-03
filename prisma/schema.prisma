@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Loan {
+  id                       String   @id @default(uuid())
+  customerDocumentNumber   String   @map("customer_document_number")
+  customerBirthDate        DateTime @map("customer_birth_date")
+  customerState            String   @map("customer_state")
+  loanAmountRequested      Int      @map("loan_amount_requested")
+  interestRate             Float    @map("interest_rate")
+  desiredInstallmentAmount Int      @map("desired_installment_amount")
+  installments             Int
+  totalInterestRateAmount  Int      @map("total_interest_rate_amount")
+  totalAmount              Int      @map("total_amount")
+  loanMadeEffective        Boolean  @default(false) @map("loan_made_effective")
+  createdAt                DateTime @default(now()) @map("created_at")
+
+  loanInstallments LoanInstallments[]
+
+  @@map("loans")
+}
+
+model LoanInstallments {
+  id                 String   @id @default(uuid())
+  outstandingBalance Int      @map("outstanding_balance")
+  interest           Int
+  adjustedBalance    Int      @map("adjusted_balance")
+  installmentAmount  Int      @map("installment_amount")
+  dueDate            DateTime @map("due_date")
+
+  loanId String
+  loan   Loan   @relation(fields: [loanId], references: [id], onDelete: Cascade)
+
+  @@map("loan_installments")
+}
