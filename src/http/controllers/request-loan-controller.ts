@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { requestLoanUseCase } from "@/use-cases/request-loan-use-case";
 import { BadRequestError } from "@/use-cases/errors/bad-request";
 import { z } from "zod";
+import { InvalidDateError } from "@/use-cases/errors/invalid-date";
 
 export async function requestLoanController(
   req: FastifyRequest,
@@ -24,7 +25,7 @@ export async function requestLoanController(
   } = requestLoanBodySchema.parse(req.body);
 
   try {
-    const { loan, loanInstallments } = await requestLoanUseCase({
+    const { loan } = await requestLoanUseCase({
       customerDocumentNumber,
       customerBirthDate,
       customerState,
@@ -32,9 +33,12 @@ export async function requestLoanController(
       desiredInstallmentAmount,
     });
 
-    return reply.status(201).send({ loan, loanInstallments });
+    return reply.status(201).send({ loan });
   } catch (error) {
     if (error instanceof BadRequestError) {
+      return reply.status(400).send({ message: error.message });
+    }
+    if (error instanceof InvalidDateError) {
       return reply.status(400).send({ message: error.message });
     }
 

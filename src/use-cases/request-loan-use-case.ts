@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
-import { Loan, LoanInstallments } from "@prisma/client";
+import { Loan } from "@prisma/client";
 import { BadRequestError } from "./errors/bad-request";
 import { formatCurrency } from "@/utils/format-currency";
-
 import dayjs from "dayjs";
+import { convertToDate } from "@/utils/convert-to-date";
 
 interface RequestLoanUseCaseProps {
   customerDocumentNumber: string;
@@ -15,7 +15,6 @@ interface RequestLoanUseCaseProps {
 
 interface RequestLoanUseCaseResponse {
   loan: Loan;
-  loanInstallments: LoanInstallments[];
 }
 
 interface Installments {
@@ -27,7 +26,7 @@ interface Installments {
 }
 
 const PERCENTAGE_LOAN_AMOUNT_REQUESTED = 0.01;
-const MINIMUM_LOAN_AMOUNT = 50000; // 50.000,00
+const MINIMUM_LOAN_AMOUNT = 5000000; // 50.000,00
 const INTEREST_BY_STATE: Record<string, number> = {
   MG: 0.01,
   SP: 0.008,
@@ -64,7 +63,7 @@ export async function requestLoanUseCase({
   let outstandingBalance = loanAmountRequested;
   let dueDate = dayjs().add(30, "day");
 
-  let installments: Installments[] = [];
+  const installments: Installments[] = [];
 
   while (outstandingBalance > 0) {
     const interest = outstandingBalance * INTEREST_BY_STATE[customerState];
@@ -73,7 +72,7 @@ export async function requestLoanUseCase({
       desiredInstallmentAmount,
       adjustedBalance
     );
-    const balanceAfterPayment = adjustedBalance - desiredInstallmentAmount;
+    const balanceAfterPayment = adjustedBalance - installmentAmount;
 
     installments.push({
       outstandingBalance,
@@ -84,22 +83,19 @@ export async function requestLoanUseCase({
     });
 
     totalInterestRateAmount += interest;
-    outstandingBalance = balanceAfterPayment;
-
-    if (outstandingBalance < 0) {
-      outstandingBalance = 0;
-    }
+    outstandingBalance = balanceAfterPayment > 0 ? balanceAfterPayment : 0;
 
     quantityInstallments++;
     dueDate = dueDate.add(30, "day");
   }
 
   const totalAmount = loanAmountRequested + totalInterestRateAmount;
+  const birthDate = convertToDate(customerBirthDate);
 
   const loan = await prisma.loan.create({
     data: {
       customerDocumentNumber,
-      customerBirthDate: dayjs(customerBirthDate).toDate(),
+      customerBirthDate: birthDate,
       customerState,
       desiredInstallmentAmount,
       installments: quantityInstallments,
@@ -115,11 +111,5 @@ export async function requestLoanUseCase({
     },
   });
 
-  const loanInstallments = await prisma.loanInstallments.findMany({
-    where: {
-      loanId: loan.id,
-    },
-  });
-
-  return { loan, loanInstallments };
+  return { loan };
 }
