@@ -49,3 +49,9 @@ O teste consiste em criar uma Web Application para simulação de empréstimo pa
 # RNFs (Requisitos não-funcionais)
 
 - [x] Os dados da aplicação precisam estar persistidos de alguma forma (JSON ou Banco de dados);
+
+</br>
+
+---
+
+<p align="center">Desenvolvido por <a href="https://www.linkedin.com/in/wellingtonrodriguesbr/" target="_blank">Wellington Rodrigues</a> ✌🏽</p>
