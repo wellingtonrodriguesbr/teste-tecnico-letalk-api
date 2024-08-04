@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch --env-file .env src/http/server.ts"
+    "dev": "tsx watch --env-file .env src/http/server.ts",
+    "build": "tsup src --out-dir build",
+    "start": "node build/server.js"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +22,7 @@
     "@prisma/client": "5.17.0",
     "dayjs": "^1.11.12",
     "fastify": "^4.28.1",
+    "tsup": "^8.2.4",
     "zod": "^3.23.8"
   }
 }
