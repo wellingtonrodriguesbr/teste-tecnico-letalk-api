@@ -18,10 +18,10 @@ interface RequestLoanUseCaseResponse {
 }
 
 interface Installments {
-  outstandingBalance: number;
-  interest: number;
-  adjustedBalance: number;
-  installmentAmount: number;
+  outstandingBalance: string;
+  interest: string;
+  adjustedBalance: string;
+  installmentAmount: string;
   dueDate: Date;
 }
 
@@ -75,10 +75,10 @@ export async function requestLoanUseCase({
     const balanceAfterPayment = adjustedBalance - installmentAmount;
 
     installments.push({
-      outstandingBalance,
-      interest,
-      adjustedBalance,
-      installmentAmount,
+      outstandingBalance: outstandingBalance.toFixed(),
+      interest: interest.toFixed(),
+      adjustedBalance: adjustedBalance.toFixed(),
+      installmentAmount: installmentAmount.toFixed(),
       dueDate: dueDate.toDate(),
     });
 
@@ -97,12 +97,12 @@ export async function requestLoanUseCase({
       customerDocumentNumber,
       customerBirthDate: birthDate,
       customerState,
-      desiredInstallmentAmount,
+      desiredInstallmentAmount: desiredInstallmentAmount.toFixed(),
       installments: quantityInstallments,
       interestRate: INTEREST_BY_STATE[customerState],
-      loanAmountRequested,
-      totalInterestRateAmount,
-      totalAmount,
+      loanAmountRequested: loanAmountRequested.toFixed(),
+      totalInterestRateAmount: totalInterestRateAmount.toFixed(),
+      totalAmount: totalAmount.toFixed(),
       loanInstallments: {
         createMany: {
           data: installments,
