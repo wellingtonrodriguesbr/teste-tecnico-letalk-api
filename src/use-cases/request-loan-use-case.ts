@@ -58,7 +58,7 @@ export async function requestLoanUseCase({
     );
   }
 
-  let quantityInstallments = 0;
+  let installmentsQuantity = 0;
   let totalInterestRateAmount = 0;
   let outstandingBalance = loanAmountRequested;
   let dueDate = dayjs().add(30, "day");
@@ -85,7 +85,7 @@ export async function requestLoanUseCase({
     totalInterestRateAmount += interest;
     outstandingBalance = balanceAfterPayment > 0 ? balanceAfterPayment : 0;
 
-    quantityInstallments++;
+    installmentsQuantity++;
     dueDate = dueDate.add(30, "day");
   }
 
@@ -98,7 +98,7 @@ export async function requestLoanUseCase({
       customerBirthDate: birthDate,
       customerState,
       desiredInstallmentAmount: desiredInstallmentAmount.toFixed(),
-      installments: quantityInstallments,
+      installments: installmentsQuantity,
       interestRate: INTEREST_BY_STATE[customerState],
       loanAmountRequested: loanAmountRequested.toFixed(),
       totalInterestRateAmount: totalInterestRateAmount.toFixed(),
