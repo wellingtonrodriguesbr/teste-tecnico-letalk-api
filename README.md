@@ -4,6 +4,8 @@
 
 O teste consiste em criar uma Web Application para simulação de empréstimo para pessoa física.
 
+### Você pode acessar o endpoint para buscar os empréstimos efetivados através deste link: <a href="https://teste-tecnico-letalk-api.onrender.com/loans">Link de acesso</a>
+
 ## Requisitos
 
 - Node.js;
