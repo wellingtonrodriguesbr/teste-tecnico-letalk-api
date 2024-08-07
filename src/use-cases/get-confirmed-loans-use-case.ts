@@ -10,6 +10,9 @@ export async function getConfirmedLoansUseCase(): Promise<GetConfirmedLoansUseCa
     where: {
       loanMadeEffective: true,
     },
+    include: {
+      loanInstallments: true,
+    },
   });
 
   return { confirmedLoans };
